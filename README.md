@@ -1,22 +1,14 @@
 # AC8 Override Toolkit
 
-`AC8 Override Toolkit` 是面向 ACE COMBAT 8 `1.1.2.0` 的通用 UE5.4 IoStore
-资源覆盖构建工具。它把资源提取、路径保留、修改、重新打包、回读验证和安装拆成可重复的
-项目工作流，不会修改游戏原始 `pakchunk0-Windows.*`。
+`AC8 Override Toolkit` 是面向 ACE COMBAT 8 `1.1.2.0` 的通用 UE5.4 IoStore资源覆盖构建工具。它把资源提取、路径保留、修改、重新包、回读验证和安装拆成可重复的项目工作流，不会修改游戏原始 `pakchunk0-Windows.*`。
 
-本工具仅用于离线单人战役开发与测试。不得在多人、联网活动、排行榜或启用 EAC 的在线
-进程中使用。运行自定义容器仍需要 UE4SS 和离线 EAC 启动配置。
+本工具仅用于离线单人战役开发与测试。不得在多人、联网活动、排行榜或启用 EAC 的在线进程中使用。运行自定义容器仍需要 UE4SS 和离线 EAC 启动配置。
 
 ## 先区分 Loader 与 Toolkit
 
-`AC8OverrideLoader` 才是实现资源覆盖的运行时核心。它使用 UE4SS 在游戏挂载官方
-`pakchunk0-Windows.utoc` 后，临时允许未签名容器，并递归挂载
-`AC8OverrideLoader\payloads` 下任意子目录中的有效 UE5.4 `.utoc`。Loader 不识别
-“导弹”“贴图”或“数据表”，也不要求容器必须由本工具生成；只要资源路径和容器格式正确，
-它就可以加载任意资源覆盖包。
+`AC8OverrideLoader` 才是实现资源覆盖的运行时核心。它使用 UE4SS 在游戏挂载官方`pakchunk0-Windows.utoc` 后，临时允许未签名容器，并递归挂载`AC8OverrideLoader\payloads` 下任意子目录中的有效 UE5.4 `.utoc`。Loader 不识别“导弹”“贴图”或“数据表”，也不要求容器必须由本工具生成；只要资源路径和容器格式正确，它就可以加载任意资源覆盖包。
 
-已有做好的未加密 `.utoc/.ucas/.pak` 集合时，不需要运行 Toolkit。把同名的三个文件放在
-一起，例如：
+已有做好的未加密 `.utoc/.ucas/.pak` 集合时，不需要运行 Toolkit。把同名的三个文件放在一起，例如：
 
 ```text
 Game/Binaries/Win64/ue4ss/Mods/AC8OverrideLoader/
@@ -26,14 +18,9 @@ Game/Binaries/Win64/ue4ss/Mods/AC8OverrideLoader/
   payloads/MyMod/MyMod_P.pak
 ```
 
-在 UE4SS 的 `mods.txt` 中启用 `AC8OverrideLoader` 即可。`.utoc` 和 `.ucas` 是 Loader
-接受该集合的必需文件；成品带有 `.pak` 时应保持同名并放在同一目录。
+在 UE4SS 的 `mods.txt` 中启用 `AC8OverrideLoader` 即可。`.utoc` 和 `.ucas` 是 Loader 接受该集合的必需文件；成品带有 `.pak` 时应保持同名并放在同一目录。
 
-`AC8OverrideToolkit` 是可选的开发工具，解决的是引文中真正困难的部分：从游戏加密
-IoStore 中找到和提取资源、进行可表达的修改、重新打包并回读验证。它的内置结构化编辑
-能力有限，但这不限制 Loader 能加载的资源类型。对于本工具不会编辑的资源，可以使用
-Unreal Editor 或其他专用工具生成 cooked 文件，再交给 Toolkit 打包验证，或直接把已经
-完成的容器放入 Loader。
+`AC8OverrideToolkit` 是可选的开发工具，解决的是[引文](https://www.nexusmods.com/acecombat8wingsoftheve/mods/24?tab=posts)中真正困难的部分：从游戏加密 IoStore 中找到和提取资源、进行可表达的修改、重新打包并回读验证。它的内置结构化编辑能力有限，但这不限制 Loader 能加载的资源类型。对于本工具不会编辑的资源，可以使用Unreal Editor 或其他专用工具生成 cooked 文件，再交给 Toolkit 打包验证或直接把已经完成的容器放入 Loader。
 
 ## 能力范围
 
@@ -46,14 +33,9 @@ Unreal Editor 或其他专用工具生成 cooked 文件，再交给 Toolkit 打�
 - 使用项目隔离的构建清单安装、验证和卸载。
 - 通用 UE4SS 加载器递归发现并按完整路径顺序挂载多个项目容器。
 
-结构化编辑目前支持已有的 `bool`、`byte`、`int`、`int64`、`uint32`、`uint64`、
-`float`、`double`、`string`、`name` 和 `enum` 属性，以及嵌套 Struct 和数组索引路径。
-工具不会猜测或创建未知 Unreal 属性。
+结构化编辑目前支持已有的 `bool`、`byte`、`int`、`int64`、`uint32`、`uint64`、`float`、`double`、`string`、`name` 和 `enum` 属性，以及嵌套 Struct 和数组索引路径。工具不会猜测或创建未知 Unreal 属性。
 
-纹理、材质、静态/骨骼网格、动画、音频和 Niagara 等资源通常需要 Unreal Editor、
-专用导入器或对应格式工具生成兼容的 cooked 文件。把生成结果按 Legacy 路径放到
-`replacementRoots` 后，本工具负责打包和回读验证；它不会把 PNG、FBX、WAV 等源文件
-自动烹饪成游戏资源。
+纹理、材质、静态/骨骼网格、动画、音频和 Niagara 等资源通常需要 Unreal Editor、专用导入器或对应格式工具生成兼容的 cooked 文件。把生成结果按 Legacy 路径放到`replacementRoots` 后，本工具负责打包和回读验证；它不会把 PNG、FBX、WAV 等源文件自动烹饪成游戏资源。
 
 ## 文件
 
@@ -68,13 +50,9 @@ assets/AC8OverrideLoader/main.dll
 
 必须完整解压，不能只复制 EXE。
 
-`config.json` 中 `gamePath` 留空时会从 Steam 库自动查找游戏；查找失败时填写完整游戏
-目录。`aesKey` 可填写合法取得的 32 字节十六进制密钥；设为 `auto` 时需要
-`tools/aes-dumper.exe`。工作区和输出目录默认位于工具目录，可改为其他可写路径。
+`config.json` 中 `gamePath` 留空时会从 Steam 库自动查找游戏；查找失败时填写完整游戏目录。`aesKey` 可填写合法取得的 32 字节十六进制密钥；设为 `auto` 时需要`tools/aes-dumper.exe`。工作区和输出目录默认位于工具目录，可改为其他可写路径。
 
-公开发布包不会附带 Oodle 或 AES 扫描器。开发者必须自行提供合法取得的
-`tools/oo2core_9_win64.dll`，并自行提供 AES 密钥或扫描器。包含这些本地依赖的
-`LocalFull` 包只供当前开发环境验证，不可原样公开分发；详见 `DISTRIBUTION.md`。
+公开发布包不会附带 Oodle 或 AES 扫描器。开发者必须自行提供合法取得的`tools/oo2core_9_win64.dll`，并自行提供 AES 密钥或扫描器。AES 扫描器可从[aes-dumper-rs](https://github.com/chadlrnsn/aes-dumper-rs)项目获取，oo2core_9_win64.dll通常可以从自己合法拥有的Unreal Engine 或其他 UE5 游戏开发环境中取得。出于安全和许可问题考虑，项目不会包含任何 Oodle 或 AES 扫描器。
 
 ## 快速开始
 
@@ -125,14 +103,9 @@ AC8OverrideToolkit.exe uninstall
 }
 ```
 
-`/Game/...` 自动映射到 `Live/Content/...uasset`。其他挂载点必须填写明确的
-`legacyPath`。`filter` 默认使用包名；资源名重名时仍会从提取结果中只选取清单指定的
-完整路径。
+`/Game/...` 自动映射到 `Live/Content/...uasset`。其他挂载点必须填写明确的`legacyPath`。`filter` 默认使用包名；资源名重名时仍会从提取结果中只选取清单指定的完整路径。
 
-原资源中的依赖元数据会由 retoc 保留，未修改的依赖可继续由游戏原始容器提供。需要新增
-或一同覆盖的依赖必须作为单独的 `resources` 条目显式列出。`inspect` 会显示部分硬引用
-导入，但 Unreal 软引用、运行时查找、材质/纹理链和蓝图动态加载无法保证从单个资源静态
-推断完整依赖。发布者必须在游戏中覆盖所有使用路径进行测试。
+原资源中的依赖元数据会由 retoc 保留，未修改的依赖可继续由游戏原始容器提供。需要新增或一同覆盖的依赖必须作为单独的 `resources` 条目显式列出。`inspect` 会显示部分硬引用导入，但 Unreal 软引用、运行时查找、材质/纹理链和蓝图动态加载无法保证从单个资源静态推断完整依赖。发布者必须在游戏中覆盖所有使用路径进行测试。
 
 ### 外部 cooked 文件
 
@@ -144,8 +117,7 @@ replacements/Live/Content/Path/MyAsset.uexp
 replacements/Live/Content/Path/MyAsset.ubulk
 ```
 
-`apply`、`build` 和 `install` 会先把这些文件按相对路径覆盖到 staged。不要在这里放
-PNG、FBX、工程源文件或未烹饪资源。
+`apply`、`build` 和 `install` 会先把这些文件按相对路径覆盖到 staged。不要在这里放PNG、FBX、工程源文件或未烹饪资源。
 
 ### 结构化修改
 
@@ -173,8 +145,7 @@ DataTable：
 }
 ```
 
-结构化修改只修改已存在且 UAssetAPI 能用当前 `Mappings.usmap` 解析的属性。复杂容器、
-自定义序列化或未支持类型应使用相应外部工具。
+结构化修改只修改已存在且 UAssetAPI 能用当前 `Mappings.usmap` 解析的属性。复杂容器、自定义序列化或未支持类型应使用相应外部工具。
 
 ## 工作区
 
@@ -185,8 +156,7 @@ workspace/<projectId>/roundtrip/  成品反向提取结果
 output/<projectId>/               最终容器和构建清单
 ```
 
-再次运行 `extract --force` 会删除当前项目工作区，包括 staged 修改。工具拒绝在没有
-`--force` 时覆盖非空工作区。
+再次运行 `extract --force` 会删除当前项目工作区，包括 staged 修改。工具拒绝在没有`--force` 时覆盖非空工作区。
 
 ## 验证含义
 
@@ -198,19 +168,13 @@ output/<projectId>/               最终容器和构建清单
 4. `.uexp/.ubulk/.uptnl` 等非头部载荷逐字节一致；
 5. 构建清单记录 staged 和 round-trip 的 SHA-256，供后续 `verify` 复验。
 
-对 UAssetAPI 尚不支持的资源，可在 `validation.parseUassets` 设为 `false`，但这会降低验证
-强度；载荷字节回读仍应保持开启。
+对 UAssetAPI 尚不支持的资源，可在 `validation.parseUassets` 设为 `false`，但这会降低验证强度；载荷字节回读仍应保持开启。
 
 ## 加载顺序与冲突
 
-安装文件名为 `<loadOrder>_<projectId>_P.*`。通用加载器递归扫描 `payloads`，按不区分
-大小写的完整路径排序，并从挂载顺序 `1000` 开始依次加载。由 Toolkit 安装在同一目录
-下的项目仍可通过六位 `loadOrder` 前缀控制顺序；手工使用子目录时，目录名也会参与排序。
-两个项目覆盖同一路径时，结果取决于挂载优先级，发布者应声明冲突而不是依赖不透明的
-组合行为。
+安装文件名为 `<loadOrder>_<projectId>_P.*`。通用加载器递归扫描 `payloads`，按不区分大小写的完整路径排序，并从挂载顺序 `1000` 开始依次加载。由 Toolkit 安装在同一目录下的项目仍可通过六位 `loadOrder` 前缀控制顺序；手工使用子目录时，目录名也会参与排序。两个项目覆盖同一路径时，结果取决于挂载优先级，发布者应声明冲突而不是依赖不透明的组合行为。
 
-旧的 `IoStoreLoaderMod` 与新的 `AC8OverrideLoader` 是两个原生挂钩模块。不要让它们同时
-覆盖相同资源；为通用项目发布时应使用本工具提供的加载器。
+旧的 `IoStoreLoaderMod` 与新的 `AC8OverrideLoader` 是两个原生挂钩模块。不要让它们同时覆盖相同资源；为通用项目发布时应使用本工具提供的加载器。
 
 ## 安全与版本限制
 
@@ -229,5 +193,4 @@ output/<projectId>/               最终容器和构建清单
 Game\Binaries\Win64\ue4ss\Mods\AC8OverrideLoader\AC8OverrideLoader.log
 ```
 
-正常日志会列出 payload，并为每个容器显示 `custom mount code=0`。游戏更新后若签名不再
-唯一，加载器会拒绝初始化，必须重新适配，不能强行复用 DLL。
+正常日志会列出 payload，并为每个容器显示 `custom mount code=0`。游戏更新后若签名不再唯一，加载器会拒绝初始化，必须重新适配，不能强行复用 DLL。
