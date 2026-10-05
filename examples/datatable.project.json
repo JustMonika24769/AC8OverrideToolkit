@@ -1,0 +1,26 @@
+{
+  "projectId": "datatable_example",
+  "displayName": "DataTable Property Example",
+  "loadOrder": 1000,
+  "resources": [
+    {
+      "package": "/Game/Datatables/PLAYER/DT_WeaponSettings",
+      "extract": true,
+      "required": true
+    }
+  ],
+  "replacementRoots": [],
+  "edits": [
+    {
+      "kind": "datatable-property",
+      "package": "/Game/Datatables/PLAYER/DT_WeaponSettings",
+      "row": "qaam_ON",
+      "property": "HomingForesightAmount",
+      "value": 1.0
+    }
+  ],
+  "validation": {
+    "parseUassets": true,
+    "comparePayloadBytes": true
+  }
+}

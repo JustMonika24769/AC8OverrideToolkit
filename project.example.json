@@ -1,0 +1,29 @@
+{
+  "projectId": "example_override",
+  "displayName": "Example AC8 Resource Override",
+  "loadOrder": 1000,
+  "resources": [
+    {
+      "package": "/Game/Blueprints/Weapons/MSL/Player/Msl/BP_plwp_msl_a0",
+      "extract": true,
+      "required": true,
+      "notes": "Primary resource. Add every required dependency as another resource entry."
+    }
+  ],
+  "replacementRoots": [
+    "replacements"
+  ],
+  "edits": [
+    {
+      "kind": "export-property",
+      "package": "/Game/Blueprints/Weapons/MSL/Player/Msl/BP_plwp_msl_a0",
+      "export": "Default__BP_plwp_msl_a0_C",
+      "property": "damage",
+      "value": 41.0
+    }
+  ],
+  "validation": {
+    "parseUassets": true,
+    "comparePayloadBytes": true
+  }
+}

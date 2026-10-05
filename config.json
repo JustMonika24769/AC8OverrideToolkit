@@ -1,0 +1,9 @@
+{
+  "gamePath": "",
+  "gameVersion": "1.1.2.0",
+  "aesKey": "auto",
+  "engineVersion": "UE5_4",
+  "workspaceRoot": "workspace",
+  "outputRoot": "output",
+  "mappingsPath": "Mappings.usmap"
+}
